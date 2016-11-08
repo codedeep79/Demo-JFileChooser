@@ -1,6 +1,6 @@
 # demoJFileChooser
 
-Một số phím tắt
+Some shortcuts:
 
 Ctrl + S: Save file
 
