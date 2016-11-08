@@ -1,11 +1,16 @@
 package demojfilechooser;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,14 +20,18 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 public class DemoJFilechooser extends JFrame{
@@ -32,6 +41,7 @@ public class DemoJFilechooser extends JFrame{
     JMenuItem mnuSave;
     JMenuItem mnuExit;
     JTextArea txtData;
+    JLabel lb;
     
     public DemoJFilechooser(){
         addControls();
@@ -45,6 +55,7 @@ public class DemoJFilechooser extends JFrame{
                 xuLyThoat();
             }
         });
+        mnuExit.setAccelerator(KeyStroke.getKeyStroke('E', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         
         mnuOpen.addActionListener(new ActionListener() {
             @Override
@@ -53,12 +64,17 @@ public class DemoJFilechooser extends JFrame{
             }
         });
         
+        mnuOpen.setAccelerator(KeyStroke.getKeyStroke('O', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        
+        
         mnuSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                luuFile();
             }
         });
+        mnuSave.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        
     }
     
     
@@ -110,7 +126,51 @@ public class DemoJFilechooser extends JFrame{
     }
     
     private void luuFile() {
-                
+//         get bound of txtData
+//        Rectangle rec = txtData.getBounds();
+//         Mô tả một hình ảnh với dữ liệu hình ảnh
+//        BufferedImage bufferedImage = new BufferedImage(rec.width, rec.height, BufferedImage.TYPE_INT_ARGB);
+//         lấy tấm hình vẽ lên txtData
+//        txtData.paint(bufferedImage.getGraphics());
+//        
+//        JFileChooser chooser = new JFileChooser();
+//        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+//        
+//        if (chooser.showSaveDialog(DemoJFilechooser.this) == JFileChooser.APPROVE_OPTION)
+//        {
+//            File f = chooser.getSelectedFile();
+//            try {
+//                // Vẽ image với định dạng png
+//                ImageIO.write(bufferedImage, "png", f);
+//                JOptionPane.showMessageDialog(null, "Save success");
+//            } catch (IOException ex) {
+//                
+//            }
+//        }
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+               return f.getAbsolutePath().endsWith(".png") 
+                       || f.getAbsolutePath().endsWith(".jpg") 
+                       || f.getAbsolutePath().endsWith(".gif");
+            }
+
+            @Override
+            public String getDescription() {
+               return ".png, .jpg, .gif";
+            }
+        });
+       if (chooser.showSaveDialog(DemoJFilechooser.this) == JFileChooser.APPROVE_OPTION)
+       {
+           File f = chooser.getSelectedFile();
+           ImageIcon imageIcon = new ImageIcon(f.getAbsolutePath());
+           Rectangle rec = txtData.getBounds();
+           Image image = imageIcon.getImage().getScaledInstance(rec.width, rec.height, Image.SCALE_DEFAULT);
+           imageIcon = new ImageIcon(image);
+           lb.setIcon(imageIcon);
+       } 
     }
     
     private void xuLyThoat() {
@@ -131,6 +191,14 @@ public class DemoJFilechooser extends JFrame{
                     JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         container.add(scrollPane, BorderLayout.CENTER);
+        
+        lb = new JLabel();
+        lb.setPreferredSize(new Dimension(200,0));
+//        No set up color 
+//        lb.setBackground(Color.BLUE);
+        container.add(lb, BorderLayout.WEST);
+        
+        
     }
     
     public void setupMenu(){
